@@ -17,18 +17,18 @@ MODEL_FILE = "model.pkl"
 PIPELINE_FILE = 'pipeline.pkl'
 
 def build_pipeline(num_attribs, cat_attribs):
-    
+    # For numerical columns
     num_pipline = Pipeline([
         ("imputer", SimpleImputer(strategy="median")),
         ("scaler", StandardScaler())
     ])
 
-    
+    # For categorical columns
     cat_pipline = Pipeline([ 
         ("onehot", OneHotEncoder(handle_unknown="ignore"))
     ])
 
-    
+    # Construct the full pipeline
     full_pipeline = ColumnTransformer([
         ("num", num_pipline, num_attribs), 
         ('cat', cat_pipline, cat_attribs)
@@ -37,10 +37,10 @@ def build_pipeline(num_attribs, cat_attribs):
     return full_pipeline
 
 if not os.path.exists(MODEL_FILE):
-  
+    # Lets train the model
     housing = pd.read_csv("housing-data.csv")
 
-   
+    # Create a stratified test set
     housing['income_cat'] = pd.cut(housing["median_income"], 
                                 bins=[0.0, 1.5, 3.0, 4.5, 6.0, np.inf], 
                                 labels=[1, 2, 3, 4, 5])
@@ -67,7 +67,7 @@ if not os.path.exists(MODEL_FILE):
     joblib.dump(pipeline, PIPELINE_FILE)
     print("Model is trained. Congrats!")
 else:
-    
+    # Lets do inference
     model = joblib.load(MODEL_FILE)
     pipeline = joblib.load(PIPELINE_FILE)
 
